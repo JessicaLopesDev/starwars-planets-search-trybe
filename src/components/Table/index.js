@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 
 export default function Table({ data }) {
-  console.log({ table: data });
   return (
     <table>
       <thead>

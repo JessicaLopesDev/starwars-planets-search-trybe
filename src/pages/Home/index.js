@@ -1,10 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Table from '../../components/Table';
 import { usePlanets } from '../../hooks/usePlanets/Context';
 
 export default function Home() {
   const { data, fetchPlanets } = usePlanets();
-  // console.log(data);
+  const [name, setName] = useState('');
+
+  const filteredData = data.filter((planet) => planet
+    .name.toLowerCase().includes(name.toLowerCase()));
 
   useEffect(() => {
     fetchPlanets();
@@ -13,10 +16,27 @@ export default function Home() {
 
   return (
     <div>
+      <label htmlFor="name-filter">
+        Star Wars
+        <input
+          data-testid="name-filter"
+          id="name-filter"
+          type="text"
+          value={ name }
+          name="name"
+          onChange={ ({ target }) => setName(target.value) }
+        />
+      </label>
       {
+        // eslint-disable-next-line no-nested-ternary
         !data.length
           ? <span>Loading...</span>
-          : <Table data={ data } />
+          : !filteredData.length
+            ? (
+              <Table data={ data } />
+            ) : (
+              <Table data={ filteredData } />
+            )
       }
     </div>
   );
