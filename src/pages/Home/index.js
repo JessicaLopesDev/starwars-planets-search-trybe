@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+// import { useEffect } from 'react';
+import { useEffect } from 'react';
+import Filter from '../../components/NumericFilter';
 import Table from '../../components/Table';
 import { usePlanets } from '../../hooks/usePlanets/Context';
 
 export default function Home() {
-  const { data, fetchPlanets } = usePlanets();
-  const [name, setName] = useState('');
-
-  const filteredData = data.filter((planet) => planet
-    .name.toLowerCase().includes(name.toLowerCase()));
+  const {
+    name,
+    setName,
+    filteredData,
+    fetchPlanets,
+  } = usePlanets();
 
   useEffect(() => {
     fetchPlanets();
@@ -27,16 +30,13 @@ export default function Home() {
           onChange={ ({ target }) => setName(target.value) }
         />
       </label>
+      <Filter />
       {
-        // eslint-disable-next-line no-nested-ternary
-        !data.length
-          ? <span>Loading...</span>
-          : !filteredData.length
-            ? (
-              <Table data={ data } />
-            ) : (
-              <Table data={ filteredData } />
-            )
+        !filteredData.length ? (
+          <span>Loading...</span>
+        ) : (
+          <Table data={ filteredData } />
+        )
       }
     </div>
   );
