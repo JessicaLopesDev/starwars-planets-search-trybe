@@ -5,9 +5,19 @@ import { PlanetsContext } from './Context';
 import * as api from '../../services/planets';
 
 function PlanetsProvider({ children }) {
+  const options = [
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ];
+
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const [columnOptions, setColumnOptions] = useState(options);
+  const [selectedFilter, setSelectedFilter] = useState([]);
   const [selectedColumn, setSelectedColumn] = useState('population');
   const [selectedComparison, setSelectedComparison] = useState('maior que');
   const [selectedValue, setSelectedValue] = useState(0);
@@ -43,6 +53,10 @@ function PlanetsProvider({ children }) {
     }
 
     setFilteredData(result);
+    setColumnOptions((prevState) => prevState.filter((item) => item !== selectedColumn));
+    setSelectedFilter((prevState) => [
+      ...prevState, `${selectedColumn} ${selectedComparison} ${selectedValue}`]);
+    console.log(result);
   };
 
   useEffect(() => {
@@ -68,6 +82,10 @@ function PlanetsProvider({ children }) {
         setSelectedValue,
         handleSubmit,
         filteredData,
+        columnOptions,
+        setColumnOptions,
+        selectedFilter,
+        setSelectedFilter,
       } }
     >
       { children }
