@@ -34,6 +34,10 @@ function PlanetsProvider({ children }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    console.log({ filteredData });
+    console.log({ selectedColumn });
+    console.log({ selectedComparison });
+    console.log({ selectedValue });
 
     let result = [];
 
@@ -53,10 +57,13 @@ function PlanetsProvider({ children }) {
     }
 
     setFilteredData(result);
-    setColumnOptions((prevState) => prevState.filter((item) => item !== selectedColumn));
     setSelectedFilter((prevState) => [
       ...prevState, `${selectedColumn} ${selectedComparison} ${selectedValue}`]);
-    console.log(result);
+
+    const newOption = columnOptions.filter((item) => item !== selectedColumn);
+    setSelectedColumn(newOption[0]);
+    setColumnOptions(newOption);
+    // console.log(result);
   };
 
   useEffect(() => {
