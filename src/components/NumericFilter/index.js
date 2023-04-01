@@ -11,6 +11,8 @@ export default function NumericFilter() {
     handleSubmit,
     columnOptions,
     selectedFilter,
+    handleRemoveFilter,
+    handleRemoveAllFilters,
   } = usePlanets();
 
   return (
@@ -25,9 +27,9 @@ export default function NumericFilter() {
           onChange={ ({ target }) => setSelectedColumn(target.value) }
         >
           {
-            columnOptions.map((option) => (
+            columnOptions.map((option, index) => (
               <option
-                key={ option }
+                key={ `${option}-${index}` }
                 value={ option }
               >
                 {option}
@@ -67,11 +69,32 @@ export default function NumericFilter() {
       >
         FILTRAR
       </button>
+      <button
+        type="button"
+        data-testid="button-remove-filters"
+        onClick={ () => handleRemoveAllFilters() }
+      >
+        REMOVER FILTROS
+      </button>
       {
-        selectedFilter && selectedFilter.map((item) => (
-          <span key={ item }>{ item }</span>
+        selectedFilter && selectedFilter.map((filter, index) => (
+          <div
+            data-testid="filter"
+            key={ `${filter}-${index}` }
+          >
+            <span>{ filter }</span>
+            <button
+              type="button"
+              onClick={ () => handleRemoveFilter(filter) }
+            >
+              Deletar
+            </button>
+          </div>
         ))
       }
     </form>
   );
 }
+// { `${filter.selectedColumn}
+// ${filter.selectedComparison}
+// ${filter.selectedValue}` }

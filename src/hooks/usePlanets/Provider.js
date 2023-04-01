@@ -13,6 +13,12 @@ function PlanetsProvider({ children }) {
     'surface_water',
   ];
 
+  // const selectedsOptions = {
+  //   column: 'population',
+  //   comparison: 'maior que',
+  //   value: 0,
+  // };
+
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
   const [filteredData, setFilteredData] = useState([]);
@@ -34,10 +40,6 @@ function PlanetsProvider({ children }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log({ filteredData });
-    console.log({ selectedColumn });
-    console.log({ selectedComparison });
-    console.log({ selectedValue });
 
     let result = [];
 
@@ -64,6 +66,23 @@ function PlanetsProvider({ children }) {
     setSelectedColumn(newOption[0]);
     setColumnOptions(newOption);
     // console.log(result);
+  };
+
+  const handleRemoveFilter = (column) => {
+    const newSelectedFilter = selectedFilter
+      .filter((item) => item.selectedColumn !== column);
+    setSelectedFilter(newSelectedFilter);
+    setColumnOptions((prevState) => [...prevState, column]);
+    // const newFilteredData = filteredData
+    //   .filter();
+    console.log(columnOptions);
+  };
+
+  const handleRemoveAllFilters = () => {
+    setSelectedFilter([]);
+    setFilteredData(data);
+    setColumnOptions(options);
+    setSelectedColumn('population');
   };
 
   useEffect(() => {
@@ -93,6 +112,8 @@ function PlanetsProvider({ children }) {
         setColumnOptions,
         selectedFilter,
         setSelectedFilter,
+        handleRemoveFilter,
+        handleRemoveAllFilters,
       } }
     >
       { children }
