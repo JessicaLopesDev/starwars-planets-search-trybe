@@ -1,4 +1,3 @@
-// import { useEffect } from 'react';
 import { useEffect } from 'react';
 import Filter from '../../components/NumericFilter';
 import Table from '../../components/Table';
@@ -33,7 +32,7 @@ export default function Home() {
       <Filter />
       {
         !filteredData.length ? (
-          <span>Loading...</span>
+          <span data-testid="loading">Loading...</span>
         ) : (
           <Table data={ filteredData } />
         )

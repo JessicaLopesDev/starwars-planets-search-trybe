@@ -25,7 +25,9 @@ export default function Table({ data }) {
         {
           data && data.map((planet) => (
             <tr key={ planet.name }>
-              <td>
+              <td
+                data-testid="planet-name"
+              >
                 {planet.name}
               </td>
               <td>

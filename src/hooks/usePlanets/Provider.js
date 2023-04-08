@@ -13,20 +13,15 @@ function PlanetsProvider({ children }) {
     'surface_water',
   ];
 
-  // const selectedsOptions = {
-  //   column: 'population',
-  //   comparison: 'maior que',
-  //   value: 0,
-  // };
-
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [columnOptions, setColumnOptions] = useState(options);
-  const [selectedFilter, setSelectedFilter] = useState([]);
   const [selectedColumn, setSelectedColumn] = useState('population');
   const [selectedComparison, setSelectedComparison] = useState('maior que');
   const [selectedValue, setSelectedValue] = useState(0);
+  const [sortSelected, setSortSelected] = useState('population');
+  const [filters, setFilters] = useState([]);
 
   const fetchPlanets = useCallback(() => {
     api.getPlanets().then((response) => {
@@ -38,55 +33,105 @@ function PlanetsProvider({ children }) {
     });
   }, []);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const getBiggerData = (result, planets, filter) => {
+    if (!result.length) {
+      return planets
+        .filter((planet) => Number(planet[filter.column]) > Number(filter.value));
+    }
+    return result
+      .filter((planet) => Number(planet[filter.column]) > Number(filter.value));
+  };
+
+  const getSmallerData = (result, planets, filter) => {
+    if (!result.length) {
+      return planets
+        .filter((planet) => Number(planet[filter.column]) < Number(filter.value));
+    }
+    return result
+      .filter((planet) => Number(planet[filter.column]) < Number(filter.value));
+  };
+
+  const getEqualData = (result, planets, filter) => {
+    if (!result.length) {
+      return planets
+        .filter((planet) => Number(planet[filter.column]) === Number(filter.value));
+    }
+    return result
+      .filter((planet) => Number(planet[filter.column]) === Number(filter.value));
+  };
+
+  const handleFilter = (newFilters, type) => {
+    const filtersData = type === 'remove' ? data : filteredData;
 
     let result = [];
 
-    if (selectedComparison === 'maior que') {
-      result = filteredData
-        .filter((planet) => Number(planet[selectedColumn]) > Number(selectedValue));
-    }
-
-    if (selectedComparison === 'menor que') {
-      result = filteredData
-        .filter((planet) => Number(planet[selectedColumn]) < Number(selectedValue));
-    }
-
-    if (selectedComparison === 'igual a') {
-      result = filteredData
-        .filter((planet) => Number(planet[selectedColumn]) === Number(selectedValue));
-    }
+    newFilters.forEach((filter) => {
+      if (filter.comparison === 'maior que') {
+        result = getBiggerData(result, filtersData, filter);
+      }
+      if (filter.comparison === 'menor que') {
+        result = getSmallerData(result, filtersData, filter);
+      }
+      if (filter.comparison === 'igual a') {
+        result = getEqualData(result, filtersData, filter);
+      }
+    });
 
     setFilteredData(result);
-    setSelectedFilter((prevState) => [
-      ...prevState, `${selectedColumn} ${selectedComparison} ${selectedValue}`]);
 
     const newOption = columnOptions.filter((item) => item !== selectedColumn);
     setSelectedColumn(newOption[0]);
     setColumnOptions(newOption);
-    // console.log(result);
   };
 
-  const handleRemoveFilter = (column) => {
-    const newSelectedFilter = selectedFilter
-      .filter((item) => item.selectedColumn !== column);
-    setSelectedFilter(newSelectedFilter);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    setFilters((prevState) => {
+      handleFilter([...prevState, {
+        column: selectedColumn,
+        comparison: selectedComparison,
+        value: selectedValue,
+      }]);
+
+      return (
+        [...prevState, {
+          column: selectedColumn,
+          comparison: selectedComparison,
+          value: selectedValue,
+        }]
+      );
+    });
+  };
+
+  const handleRemoveFilter = (index, column) => {
+    const selectedFilter = filters
+      .filter((_, i) => index !== i);
+
+    console.log({ selectedFilter });
+
+    if (selectedFilter.length) {
+      handleFilter(selectedFilter, 'remove');
+      setFilters(selectedFilter);
+    } else {
+      setFilteredData(data);
+      setFilters(selectedFilter);
+    }
+
     setColumnOptions((prevState) => [...prevState, column]);
-    // const newFilteredData = filteredData
-    //   .filter();
-    console.log(columnOptions);
   };
 
   const handleRemoveAllFilters = () => {
-    setSelectedFilter([]);
+    setFilters([]);
     setFilteredData(data);
     setColumnOptions(options);
     setSelectedColumn('population');
   };
 
   useEffect(() => {
-    if (!name.length) setFilteredData(data);
+    if (!name.length) {
+      setFilteredData(data);
+    }
 
     const newData = data.filter((planet) => planet
       .name.toLowerCase().includes(name.toLowerCase()));
@@ -110,10 +155,12 @@ function PlanetsProvider({ children }) {
         filteredData,
         columnOptions,
         setColumnOptions,
-        selectedFilter,
-        setSelectedFilter,
         handleRemoveFilter,
         handleRemoveAllFilters,
+        options,
+        sortSelected,
+        setSortSelected,
+        filters,
       } }
     >
       { children }

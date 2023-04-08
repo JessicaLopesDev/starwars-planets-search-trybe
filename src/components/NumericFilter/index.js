@@ -10,9 +10,12 @@ export default function NumericFilter() {
     setSelectedValue,
     handleSubmit,
     columnOptions,
-    selectedFilter,
     handleRemoveFilter,
     handleRemoveAllFilters,
+    options,
+    sortSelected,
+    setSortSelected,
+    filters,
   } = usePlanets();
 
   return (
@@ -77,24 +80,71 @@ export default function NumericFilter() {
         REMOVER FILTROS
       </button>
       {
-        selectedFilter && selectedFilter.map((filter, index) => (
+        filters && filters.map((filter, index) => (
           <div
             data-testid="filter"
             key={ `${filter}-${index}` }
           >
-            <span>{ filter }</span>
+            <span>
+              {
+                `${filter.column}
+                ${filter.comparison}
+                ${filter.value}`
+              }
+            </span>
             <button
               type="button"
-              onClick={ () => handleRemoveFilter(filter) }
+              onClick={ () => handleRemoveFilter(index, filter.column) }
             >
               Deletar
             </button>
           </div>
         ))
       }
+      <label htmlFor="column-sort">
+        Ordenar
+        <select
+          name="sortColumn"
+          data-testid="column-sort"
+          id="column-sort"
+          value={ sortSelected }
+          onChange={ ({ target }) => setSortSelected(target.value) }
+        >
+          {
+            options.map((option, index) => (
+              <option
+                key={ `${option}-${index}` }
+                value={ option }
+              >
+                {option}
+              </option>
+            ))
+          }
+        </select>
+      </label>
+      <input
+        data-testid="column-sort-input-asc"
+        type="radio"
+        name="sort"
+        value="ASC"
+        label="Crescente"
+        // onClick={ (e) => setSortInput(e.target.value) }
+      />
+      <input
+        data-testid="column-sort-input-desc"
+        type="radio"
+        name="sort"
+        value="DESC"
+        label="Decrescente"
+        // onClick={ (e) => setSortInput(e.target.value) }
+      />
+      <button
+        type="button"
+        data-testid="column-sort-button"
+        // onClick={ () => handleRemoveAllFilters() }
+      >
+        ORDENAR
+      </button>
     </form>
   );
 }
-// { `${filter.selectedColumn}
-// ${filter.selectedComparison}
-// ${filter.selectedValue}` }
