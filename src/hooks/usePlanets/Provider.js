@@ -108,8 +108,6 @@ function PlanetsProvider({ children }) {
     const selectedFilter = filters
       .filter((_, i) => index !== i);
 
-    console.log({ selectedFilter });
-
     if (selectedFilter.length) {
       handleFilter(selectedFilter, 'remove');
       setFilters(selectedFilter);
