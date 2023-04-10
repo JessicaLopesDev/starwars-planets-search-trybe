@@ -14,15 +14,15 @@ test('I am your test', async () => {
       <App />
   );
   await waitFor(() => { 
-    // Testa chamada da API
+// Testa chamada da API
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(global.fetch).toHaveBeenCalledWith('https://swapi.dev/api/planets');
 
-    //Testa se o planeta 'Tatooine" aparece na tela após a api ser carregada
+//Testa se o planeta 'Tatooine" aparece na tela após a api ser carregada
     expect(screen.getByText(/tatooine/i)).toBeInTheDocument();
   });
   
-  // Testa se inputs são reinderizados
+// Testa se inputs e botões são reinderizados
   expect(screen.getByTestId('name-filter')).toBeInTheDocument();
   expect(screen.getByTestId('column-filter')).toBeInTheDocument();
   expect(screen.getByTestId('comparison-filter')).toBeInTheDocument();
@@ -31,7 +31,21 @@ test('I am your test', async () => {
   expect(screen.getByTestId('button-remove-filters')).toBeInTheDocument();
   expect(screen.getByTestId('column-sort')).toBeInTheDocument();
 
-  // Testa inputs e botão de remover um filtro - maior que
+  
+//Testa se o header da tabela aparece na tela após a api ser carregada
+  expect(screen.getByRole('columnheader', { name: /name/i })).toBeInTheDocument();
+  expect(screen.getByRole('columnheader', { name: /rotation_period/i })).toBeInTheDocument();
+  expect(screen.getByRole('columnheader', { name: /orbital_period/i })).toBeInTheDocument();
+
+  act(() => {
+    fireEvent.change(screen.getByTestId('column-sort'), {
+      target: {value: 'orbital_period'}
+    });
+  })
+  expect(screen.getAllByRole('option', { name: 'orbital_period'})[1].selected).toBe(true)
+
+
+// Testa inputs e botão de remover um filtro - select 'maior que'
   act(() => {
     fireEvent.change(screen.getByTestId('column-filter'), {
       target: {value: 'orbital_period'}
@@ -44,19 +58,17 @@ test('I am your test', async () => {
     });
   })
   expect(screen.getByRole('option', { name: 'maior que'}).selected).toBe(true)
-
   act(() => { fireEvent.click(screen.getByTestId('button-filter')) })
   expect(screen.getByText('Bespin')).toBeInTheDocument();
   const filter = screen.getAllByTestId('filter')
   expect(filter.length).toBe(1)
   expect(screen.getByRole('button', { name: 'Deletar'})).toBeInTheDocument();
-
   act(() => { fireEvent.click(screen.getByText('Deletar')) })
   expect(screen.getByText(/tatooine/i)).toBeInTheDocument();
 
-// ///////////////////////////////////////////////////////////////////////////////////
+// ################################################################################3
 
-  // Testa inputs e botão de remover um filtro - menor que
+// Testa inputs e botão de remover todos os filtros - select 'menor que'
   act(() => {
     fireEvent.change(screen.getByTestId('column-filter'), {
       target: {value: 'surface_water'}
@@ -69,15 +81,13 @@ test('I am your test', async () => {
     });
   })
   expect(screen.getByRole('option', { name: 'menor que'}).selected).toBe(true)
-  act(() => {
-    fireEvent.click(screen.getByTestId('button-filter'));
-  })
+  act(() => { fireEvent.click(screen.getByTestId('button-filter')) })
   expect(screen.getByText('Tatooine')).toBeInTheDocument();
-  act(() => {
-    fireEvent.click(screen.getByTestId('button-remove-filters'));
-  })  
+  act(() => { fireEvent.click(screen.getByTestId('button-remove-filters')) })  
 
-  // // Testa inputs e botão de remover todos os filtros - igual a
+// ################################################################################3
+
+// Testa inputs e botão de remover todos os filtros - select 'igual a'
   act(() => {
     fireEvent.change(screen.getByTestId('column-filter'), {
       target: {value: 'diameter'}
@@ -90,28 +100,17 @@ test('I am your test', async () => {
     });
   })
   expect(screen.getByRole('option', { name: 'igual a'}).selected).toBe(true);
-  act(() => {
-    fireEvent.click(screen.getByTestId('button-filter'));
-  })
+  act(() => { fireEvent.click(screen.getByTestId('button-filter')) })
   expect(screen.getByRole('cell', { name: /alderaan/i })).toBeInTheDocument();
-  act(() => {
-    fireEvent.click(screen.getByTestId('button-remove-filters'));
-  })
+  act(() => { fireEvent.click(screen.getByTestId('button-remove-filters')) })
   expect(screen.getByText('Tatooine')).toBeInTheDocument();
   
-  // //Testa se o loading desaparece quando a api é carregada
-  // await waitForElementToBeRemoved(() => screen.getByTestId('loading'), { timeout: 3000 })
-  
-  // // //Testa se o header da tabela aparece na tela após a api ser carregada
-  expect(screen.getByRole('columnheader', { name: /name/i })).toBeInTheDocument();
-  expect(screen.getByRole('columnheader', { name: /rotation_period/i })).toBeInTheDocument();
-  expect(screen.getByRole('columnheader', { name: /orbital_period/i })).toBeInTheDocument();
+//Testa se o loading desaparece quando a api é carregada
+// await waitForElementToBeRemoved(() => screen.getByTestId('loading'), { timeout: 3000 })
 
-  // //Testa o filtro de 'name' se funciona
+//Testa o filtro de 'name' se funciona
   act(() => {
     userEvent.type(screen.getByTestId('name-filter'), 'd');
   })
   expect(screen.getByRole('cell', { name: /alderaan/i })).toBeInTheDocument();
-
-  // screen.logTestingPlaygroundURL();
 });

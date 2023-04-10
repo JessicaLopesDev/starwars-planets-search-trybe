@@ -124,6 +124,7 @@ function PlanetsProvider({ children }) {
     setFilteredData(data);
     setColumnOptions(options);
     setSelectedColumn('population');
+    setSelectedValue(0);
   };
 
   useEffect(() => {
